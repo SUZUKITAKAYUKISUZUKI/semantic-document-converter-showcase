@@ -16,6 +16,28 @@ Source document → structured representation → audited Markdown
 
 The pipeline preserves relationships that ordinary OCR often loses—headings, prose, code, formulas, diagrams, and reading order—while keeping the source page as the ground truth. This approach is relevant when clients need usable Markdown without silently replacing uncertain evidence with plausible-looking content.
 
+## Part of the Semantic Processing Suite
+
+SDC is the upstream document-reconstruction layer of the broader **Semantic Processing Suite**, a staged workflow that separates source reconstruction, knowledge extraction, and reusable logic generation.
+
+```text
+Source Document
+      ↓
+SDC — Semantic Document Converter
+      ↓
+Source-faithful Reader Markdown
+      ↓
+SKC — Semantic Knowledge Crystallizer
+      ↓
+*_knowledge
+      ↓
+SLC — Semantic Logic Compiler
+      ↓
+*_logic
+```
+
+SDC deliberately avoids summarization and semantic reinterpretation. SKC consumes its source-faithful Markdown to create `*_knowledge`, and SLC consumes that knowledge to create explicitly derived `*_logic`. Each component remains independently testable through a clear artifact boundary.
+
 ## The Problem
 
 Real document pipelines fail in more ways than a single character-recognition score reveals. Common problems include:
@@ -122,6 +144,10 @@ Relevant project types include:
 - agentic workflow engineering.
 
 For a concise account of the engineering decisions, see the [Engineering Case Study](docs/ENGINEERING_CASE_STUDY.md).
+
+## Related Projects
+
+- [Semantic Knowledge Pipeline](https://github.com/SUZUKITAKAYUKISUZUKI/semantic-knowledge-pipeline-showcase) — downstream knowledge crystallization and logic compilation using SKC and SLC.
 
 ## Repository Scope
 
