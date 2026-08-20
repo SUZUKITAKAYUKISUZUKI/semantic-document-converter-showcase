@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.log
+.DS_Store
+Thumbs.db
+*.pdf
+*.epub
+*.zip
+*.7z
+*.sqlite
+*.db
