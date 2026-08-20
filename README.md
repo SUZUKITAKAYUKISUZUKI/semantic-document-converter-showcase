@@ -2,6 +2,8 @@
 
 A source-faithful document conversion pipeline that turns page images into structured, audited Markdown through OCR, layout analysis, deterministic safeguards, and bounded AI verification.
 
+[日本語版 / Japanese Portfolio](README_JA.md)
+
 This repository is a public engineering showcase. The production implementation remains private.
 
 ![Synthetic source beside structured Markdown](assets/demo-before-after.png)
