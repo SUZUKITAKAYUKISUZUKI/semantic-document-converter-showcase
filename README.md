@@ -1,48 +1,34 @@
 # Semantic Document Converter — Engineering Showcase
 
-A source-faithful document conversion pipeline that turns page images into structured, audited Markdown through OCR, layout analysis, deterministic safeguards, and bounded AI verification.
+A Python-based document automation pipeline for turning scanned pages and PDF-derived page images into structured, source-faithful Markdown with OCR, layout analysis, and bounded AI verification.
 
 [日本語版 / Japanese Portfolio](README_JA.md)
 
 This repository is a public engineering showcase. The production implementation remains private.
 
+## What This Can Help With
+
+- OCR automation for scanned documents and PDF-derived page images
+- document-to-Markdown conversion that retains headings, prose, code, formulas, diagrams, and reading order
+- structured document extraction for downstream search, review, or data workflows
+- local or private AI-assisted document processing
+- deterministic validation around uncertain OCR and model output
+- recoverable long-running batch processing with checkpoints and audit evidence
+
+## Quick Demo
+
 ![Synthetic source beside structured Markdown](assets/demo-before-after.png)
 
-## Overview
+The [synthetic demo](demo/README.md) shows a fictional page containing prose, code, a small diagram, and a formula, followed by its expected structured Markdown.
 
-Semantic Document Converter (SDC) addresses document reconstruction rather than plain text extraction:
+- [Synthetic source page](demo/synthetic_source.png)
+- [Illustrative expected output](demo/synthetic_output.md)
 
-```text
-Source document → structured representation → audited Markdown
-```
-
-The pipeline preserves relationships that ordinary OCR often loses—headings, prose, code, formulas, diagrams, and reading order—while keeping the source page as the ground truth. This approach is relevant when clients need usable Markdown without silently replacing uncertain evidence with plausible-looking content.
-
-## Part of the Semantic Processing Suite
-
-SDC is the upstream document-reconstruction layer of the broader **Semantic Processing Suite**, a staged workflow that separates source reconstruction, knowledge extraction, and reusable logic generation.
-
-```text
-Source Document
-      ↓
-SDC — Semantic Document Converter
-      ↓
-Source-faithful Reader Markdown
-      ↓
-SKC — Semantic Knowledge Crystallizer
-      ↓
-*_knowledge
-      ↓
-SLC — Semantic Logic Compiler
-      ↓
-*_logic
-```
-
-SDC deliberately avoids summarization and semantic reinterpretation. SKC consumes its source-faithful Markdown to create `*_knowledge`, and SLC consumes that knowledge to create explicitly derived `*_logic`. Each component remains independently testable through a clear artifact boundary.
+This is an illustrative expected transformation, not output claimed from a production run. All demo material was created for this repository.
 
 ## The Problem
 
-Real document pipelines fail in more ways than a single character-recognition score reveals. Common problems include:
+Plain OCR can produce readable text while still damaging the structure and evidence that make a document useful. Common failures include:
 
 - character corruption and abnormal repetition;
 - damaged URLs, markup, and code indentation;
@@ -66,7 +52,15 @@ The engineering challenge is to recover structure while making uncertainty visib
 
 Together, these capabilities support client work where accuracy, traceability, privacy, and operational recovery matter as much as extraction speed.
 
-## Architecture
+## How It Works
+
+SDC addresses document reconstruction rather than plain text extraction:
+
+```text
+Source pages → canonical document → specialized processing → validated Markdown
+```
+
+The source page remains the ground truth. OCR and layout analysis identify candidate content and reading order; a canonical representation keeps ordered semantic blocks and source associations; specialized routes apply different fidelity rules to prose, code, formulas, and visuals; deterministic controls then bound AI-assisted inspection and correction.
 
 ```mermaid
 flowchart LR
@@ -98,16 +92,22 @@ See [Architecture](docs/ARCHITECTURE.md) for the responsibility boundaries behin
 - **Multi-agent convergence.** Inspection, correction, and verification have distinct roles instead of relying on one unrestricted rewrite pass.
 - **Resume and auditability.** Completed chunks can be checkpointed, and finishing decisions can be recorded as structured evidence.
 
-## Synthetic Demo
+## Quality and Current Status
 
-The [synthetic demo](demo/README.md) shows a fictional page containing prose, code, a small diagram, and a formula, followed by its expected structured Markdown. All material was created for this repository.
+**Status:** Active development / Release Qualification
 
-- [Synthetic source page](demo/synthetic_source.png)
-- [Illustrative expected output](demo/synthetic_output.md)
+**Private build version:** `v0.2.0`
+
+**Release state:** Not release-locked
+
+The private repository records RQ-0 through RQ-3 as passed and RQ-4 as on hold while large-document qualification remains open. Its quality process combines automated unit tests, small real-document smoke tests, and failure-driven qualification.
+
+Qualification focuses on general failure classes—such as corrupted repetition, unsafe corrections, visual omissions, verifier overreach, and interrupted processing—rather than document-specific exceptions.
 
 ## Representative Code
 
 > Representative simplified examples.
+>
 > Production implementation remains private.
 
 - [Suspicion detection](snippets/suspicion_detection.py) — flags evidence that should be checked without modifying it.
@@ -116,11 +116,9 @@ The [synthetic demo](demo/README.md) shows a fictional page containing prose, co
 
 These examples were written specifically for this portfolio and are not copies of the production implementation.
 
-## Quality Engineering
+## Engineering Case Study
 
-The private SDC v0.2.0 build combines unit testing, small real-document smoke tests, and failure-driven release qualification. For this showcase review, its unit suite was re-run locally: **164 tests passed**. Its current repository status is **active development / release qualification**: RQ-0 through RQ-3 are recorded as passed, while RQ-4 remains on hold. The build is not release-locked and is currently undergoing large-document release qualification.
-
-The qualification strategy emphasizes general failure classes—such as corrupted repetition, unsafe corrections, visual omissions, verifier overreach, and interrupted processing—rather than document-specific exceptions.
+The [Engineering Case Study](docs/ENGINEERING_CASE_STUDY.md) explains the observed failure modes and the design responses: deterministic suspicion escalation, source-crop verification, prose micro-patching, code-specific policies, visual audits, independent verification, and resumable processing.
 
 ## Skills Demonstrated
 
@@ -134,22 +132,38 @@ The qualification strategy emphasizes general failure classes—such as corrupte
 - AI agent orchestration
 - source-grounded testing and audit design
 
-## Client Relevance
+## Relevant Project Types
 
-Relevant project types include:
+- OCR automation and document extraction
+- PDF- or image-based document processing
+- document-to-Markdown and structured-data conversion
+- AI-assisted document review
+- local or private AI workflows
+- structured data validation
+- recoverable batch processing
+- agentic workflow engineering
 
-- OCR automation and document extraction;
-- AI-assisted document processing;
-- local or private AI workflows;
-- structured data validation;
-- recoverable batch processing; and
-- agentic workflow engineering.
+## Part of the Semantic Processing Suite
 
-For a concise account of the engineering decisions, see the [Engineering Case Study](docs/ENGINEERING_CASE_STUDY.md).
+SDC is the upstream document-reconstruction layer of a staged workflow that separates source reconstruction, knowledge extraction, and reusable logic generation.
 
-## Related Projects
+```text
+Source Document
+      ↓
+SDC — Semantic Document Converter
+      ↓
+Source-faithful Reader Markdown
+      ↓
+SKC — Semantic Knowledge Crystallizer
+      ↓
+*_knowledge
+      ↓
+SLC — Semantic Logic Compiler
+      ↓
+*_logic
+```
 
-- [Semantic Knowledge Pipeline](https://github.com/SUZUKITAKAYUKISUZUKI/semantic-knowledge-pipeline-showcase) — downstream knowledge crystallization and logic compilation using SKC and SLC.
+SDC deliberately avoids summarization and semantic reinterpretation. SKC consumes its source-faithful Markdown to create `*_knowledge`, and SLC processes logic-capable knowledge into explicitly derived `*_logic`. Each component remains independently testable through a clear artifact boundary.
 
 ## Repository Scope
 
@@ -161,3 +175,7 @@ For a concise account of the engineering decisions, see the [Engineering Case St
 - No software license is granted or implied by this repository.
 
 See [NOTICE.md](NOTICE.md) for the public/private boundary.
+
+## Related Projects
+
+- [Semantic Knowledge Pipeline](https://github.com/SUZUKITAKAYUKISUZUKI/semantic-knowledge-pipeline-showcase) — downstream knowledge crystallization and logic compilation using SKC and SLC.
