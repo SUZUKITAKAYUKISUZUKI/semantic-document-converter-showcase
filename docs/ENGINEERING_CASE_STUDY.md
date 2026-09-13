@@ -65,6 +65,21 @@ Only completed chunks are checkpointed. An interruption preserves completed work
 
 Findings and decisions are recorded in a machine-readable form suitable for debugging and qualification, without retaining hidden model reasoning.
 
+## Local Runtime Qualification and Safe Visual Fallback
+
+The latest development path integrates Gemma 4 through an independently operated FreeToken Kai HTTP server. Separate source-backed requests preserve the Inspector, Corrector, and Verifier responsibilities while retaining deterministic patch validation.
+
+Two boundaries matter in this work:
+
+- **Structured output is not guaranteed by requesting JSON.** Recovery extracts only an already-complete object. It does not complete a truncated response or invent required values. Invalid visual content preserves source imagery; a failed text/source audit cannot be treated as successful finishing.
+- **Valid Mermaid syntax is not proof of visual fidelity.** A conservative parser checks the candidate, and a separate image-only inventory checks its nodes, edges, and labels. Uncertain relationships or essential spatial layout require source-image preservation. Conversion, finishing patches, and existing diagrams all pass through this policy.
+
+As recorded in the current private development README and reviewed on 2026-09-14, RQ5B selected `nvidia/Gemma-4-26B-A4B-NVFP4`. RQ6b converted all 105 captured pages, preserving unusable visuals as images. Finish then stopped at its first Corrector request after Kai reduced the output budget to 32 tokens. No finished Reader was produced, and qualification remains **HOLD**.
+
+The safe-graph runtime smoke also fell back to an image after an invalid inventory response. This demonstrates rejection of unusable evidence, not successful native Mermaid acceptance. An earlier heading-decoration error remains a closed known risk rather than a verified repair. Gemma remains the selected qualification model, with the existing default unchanged until qualification passes.
+
+The engineering outcome is a clearer separation between conversion completion, safe fallback, and end-to-end acceptance. Aggregate outcomes are described here; private source documents, prompts, tests, and operational traces remain outside the showcase.
+
 ## What This Demonstrates
 
 This project demonstrates more than assembling an OCR tool. It shows an engineering approach to:

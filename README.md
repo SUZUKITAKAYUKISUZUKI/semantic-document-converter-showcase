@@ -45,7 +45,8 @@ The engineering challenge is to recover structure while making uncertainty visib
 - Specialized processing routes for prose, code, formulas, and visuals, so each content type receives an appropriate fidelity policy.
 - Source-faithful reconstruction that avoids summarizing, stylistic rewriting, or inventing missing content.
 - Formula OCR integration with a visual fallback when a reliable transcription is unavailable.
-- Diagram handling that can preserve simple relationships as Mermaid while retaining complex visuals as images.
+- Diagram handling with a conservative Gemma Mermaid gate: candidate nodes, edges, and labels must match an independent image-only inventory; uncertain visuals remain source images.
+- Explicit Gemma 4 / FreeToken Kai integration for local visual analysis and source-verified finishing, with separate requests for each review role.
 - Deterministic suspicion detection and patch validation around probabilistic model output.
 - Independent Inspector, Corrector, and Verifier roles for bounded, evidence-driven finishing.
 - Chunk-level checkpoints and structured audit evidence for recoverable long-running work.
@@ -100,9 +101,30 @@ See [Architecture](docs/ARCHITECTURE.md) for the responsibility boundaries behin
 
 **Release state:** Not release-locked
 
-The private repository records RQ-0 through RQ-3 as passed and RQ-4 as on hold while large-document qualification remains open. Its quality process combines automated unit tests, small real-document smoke tests, and failure-driven qualification.
+**Status reviewed:** 2026-09-14, against the current private development README and implementation, including uncommitted development changes. This describes development state, not a released build.
+
+| Qualification | Recorded outcome |
+| --- | --- |
+| RQ-0 through RQ-3 | PASS — earlier integration and finishing milestones |
+| RQ-4 | HOLD — large-document release qualification remains open |
+| RQ5B | Selected `nvidia/Gemma-4-26B-A4B-NVFP4` for qualification |
+| RQ6b | HOLD — all 105 captured pages converted, with unusable visual responses preserved as source images; Finish stopped at its first Corrector request after Kai reduced the output budget to 32 tokens |
+
+**No finished Reader was produced in RQ6b.** Conversion completion does not establish end-to-end fidelity or release readiness. The safe-graph smoke also retained an image after an invalid inventory response, so native Mermaid acceptance remains unqualified. The earlier heading-decoration error remains a closed known risk, not a demonstrated fix.
+
+Gemma remains the selected qualification model; the production default remains Ollama until qualification passes. The explicit Ollama visual path and its existing Codex App Server finishing route remain available. There is no silent model fallback in the Gemma path.
+
+The quality process combines automated unit tests, small real-document smoke tests, and failure-driven qualification. These outcomes are summarized from private development records; source pages, internal tests, and raw qualification evidence are not published here.
 
 Qualification focuses on general failure classes—such as corrupted repetition, unsafe corrections, visual omissions, verifier overreach, and interrupted processing—rather than document-specific exceptions.
+
+## Local Runtime and Visual Safety
+
+The Gemma qualification path communicates with an independently started FreeToken Kai server over an OpenAI-compatible HTTP interface. SDC sends original source-image bytes and makes independent, sequential Inspector, Corrector, and Verifier requests. SDC does not manage the server or WSL lifecycle.
+
+Structured-response recovery is limited to extracting a complete JSON object from a wrapper; it does not invent missing fields or repair truncated content. Unusable visual responses preserve the source crop, while source-audit and transport failures stop explicitly. A Mermaid candidate must be fully parsed and agree with a separate image-only inventory; ambiguous topology or essential spatial layout keeps the original visual. The gate covers conversion, proposed finishing edits, and existing diagrams.
+
+See [Architecture](docs/ARCHITECTURE.md) for runtime boundaries and [Engineering Case Study](docs/ENGINEERING_CASE_STUDY.md#local-runtime-qualification-and-safe-visual-fallback) for the latest qualification findings.
 
 ## Representative Code
 

@@ -17,7 +17,8 @@ Semantic Document Converter（SDC）は、ページ画像から読みやすいMa
 - OCRを利用したページ画像からのテキスト抽出
 - 見出し、本文、読み順などの文書構造の保持
 - コード、数式、表、図、ダイアグラムの個別処理
-- ローカルVisionモデルやLLMとの連携
+- ローカルVisionモデルやLLMとの連携（Gemma 4 / FreeToken Kaiの明示的な検証経路を追加）
+- Mermaid候補と、元画像だけから独立に抽出したノード・辺・ラベルを照合し、不確実な図は元画像として保持
 - OCR結果やAI提案をそのまま採用しない決定論的な検証
 - 元画像を根拠として局所的な修正だけを許可する設計
 - Inspector、Corrector、Verifierによる役割分担型の確認処理
@@ -77,7 +78,8 @@ SDCが要約や意味の再解釈を意図的に行わないのは、原資料�
 - OCR / 文書処理
 - Computer Vision
 - ローカルVLM / LLM
-- Ollama
+- Ollama / Gemma 4 / FreeToken Kai
+- ローカルのOpenAI互換HTTP API
 - Markdown / 構造化データ
 - Structured Output
 - 決定論的な検証
@@ -88,7 +90,22 @@ SDCが要約や意味の再解釈を意図的に行わないのは、原資料�
 
 **Status: Active Development / Release Qualification**
 
-現在もRelease Qualificationを進めているEngineering Projectです。SDC v0.2.0では、複数段階のqualificationのうちRQ-0〜RQ-3を通過し、RQ-4の大規模文書確認を継続しています。
+**状態確認日：2026-09-14。** 非公開側の最新READMEと実装（未コミットの開発変更を含む）に基づく開発状況であり、リリース済みビルドの説明ではありません。
+
+SDC v0.2.0は引き続きRelease Qualification中で、release-lockedではありません。
+
+| 検証段階 | 記録されている結果 |
+| --- | --- |
+| RQ-0〜RQ-3 | PASS：既存の統合・finishingの段階検証 |
+| RQ-4 | HOLD：大規模文書でのリリース判定は未完了 |
+| RQ5B | 検証モデルとして `nvidia/Gemma-4-26B-A4B-NVFP4` を選定 |
+| RQ6b | HOLD：105ページの変換は完了。不正な視覚応答は元画像として保持したが、Kaiが出力予算を32トークンへ縮小し、最初のCorrector要求でFinishが停止 |
+
+**RQ6bでは完成したReaderを生成できていません。** 変換の完了は、原文忠実性や一連の処理の合格を意味しません。単純グラフの実機smokeでも独立照合の応答が不正だったため画像保持となり、Mermaidの実機採用経路は未認定です。以前の見出し装飾の誤認識は既知リスクとしてクローズされており、修正済みとは扱っていません。
+
+Gemmaは選定モデルとして維持していますが、検証合格までは既定のOllama構成を変更しません。Gemma経路では、Inspector・Corrector・Verifierを独立した逐次HTTP要求で実行します。JSONの欠落補完や別モデルへの自動切替は行わず、利用できない視覚応答は元画像を残し、原文照合や通信の失敗は明示的に停止します。
+
+検証結果は非公開の開発記録からの要約です。実書籍の画像・内部テスト・生の検証データは公開していません。
 
 完成済み製品やproduction-readyなシステムとして公開しているものではありません。
 

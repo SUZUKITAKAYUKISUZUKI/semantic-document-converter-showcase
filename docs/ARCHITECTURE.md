@@ -56,7 +56,9 @@ Formula candidates can use a dedicated formula recognizer. A transcription remai
 
 ### Visual
 
-Simple structural diagrams may become Mermaid when nodes, labels, and relationships can be preserved. Complex figures remain image evidence with a restrained description rather than an invented reconstruction.
+Simple structural diagrams may become Mermaid when nodes, labels, and relationships can be preserved. In the Gemma path, a conservative directed-graph parser must understand the entire candidate. A separate request sees only the source image and inventories its nodes, edges, and labels; acceptance requires exact agreement and no essential spatial-layout loss.
+
+Ambiguous topology, unsupported syntax, invalid inventory responses, and mismatches retain the source visual. The gate applies during conversion, to proposed finishing patches, and to pre-existing diagrams. This is an implemented safety boundary; successful native Mermaid acceptance is still unqualified in the latest real-runtime smoke.
 
 ## Deterministic vs AI Responsibilities
 
@@ -88,6 +90,16 @@ flowchart LR
 
 These are different responsibilities, not three votes on the same free-form response. Unresolved evidence blocks convergence rather than being silently accepted.
 
+## Local Runtime Boundary
+
+The explicit Gemma 4 qualification path uses FreeToken Kai through an OpenAI-compatible HTTP endpoint. The runtime is started separately: SDC neither imports Kai nor manages WSL processes. Original source-image bytes accompany the requests; source evidence is mandatory for Gemma finishing.
+
+Inspector, Corrector, and Verifier use independent, sequential HTTP requests with the existing deterministic patch guards and bounded convergence loop. Distinct roles do not imply different model families or concurrent execution.
+
+Response recovery may extract one complete JSON object from surrounding formatting. It never fills missing fields, changes values, or requests regeneration to complete a broken response. Unusable visual content retains the original crop. Source-audit and transport errors remain explicit failures, without silent model substitution.
+
+The default remains Ollama pending qualification. In that mode, finishing retains its Codex App Server route. Gemma is an explicitly selected development path, not a completed default-backend migration.
+
 ## Resume
 
 Finishing operates on stable chunks. A chunk is checkpointed only after it reaches the required completion state. After an interruption, the workflow can verify the checkpoint, skip completed chunks, and resume at the first incomplete unit.
@@ -97,5 +109,7 @@ This reduces repeated model work while preventing partially reviewed content fro
 ## Auditability
 
 Structured audit records can capture findings, suspicion categories, correction proposals, validation decisions, verification results, and chunk outcomes. They provide evidence about what the system did without persisting hidden model reasoning.
+
+Gemma visual-safety decisions are also recorded separately, allowing image-preservation decisions to be reviewed without storing hidden model reasoning.
 
 The public showcase intentionally omits private schemas, prompts, thresholds, and operational traces.
